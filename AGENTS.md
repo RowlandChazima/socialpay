@@ -65,3 +65,41 @@ Implement a lightweight GET route handler for Next.js App Router that verifies d
 - Use Next.js App Router route handler conventions (`export async function GET()`).
 - Strict TypeScript typing with no unused variables.
 - Keep the implementation clean and free of unnecessary external dependencies.
+
+<!-- THE USER MODELS -->
+
+Act as a Senior Next.js Backend Architect. Create a TypeScript Mongoose model file located at `lib/db/models/User.ts`.
+
+### Primary Objective
+
+Implement a strictly typed Mongoose User schema and model that prevents model re-compilation errors during Next.js Hot Module Reloads (HMR) and enforces string sanitization at the database layer.
+
+### Technical Requirements
+
+1. Imports:
+   - Import `mongoose`, `{ Schema, Document, Model }` from `"mongoose"`.
+2. Exported Types & Interfaces:
+   - Export type `UserRole`: String union `"SELLER" | "CUSTOMER" | "ADMIN"`.
+   - Export interface `IUser` extending `Document`:
+     - `name`: string
+     - `email`: string
+     - `phone`: string
+     - `passwordHash`: string
+     - `role`: `UserRole`
+     - `createdAt`: Date
+     - `updatedAt`: Date
+3. Schema Definition (`UserSchema = new Schema<IUser>`):
+   - `name`: String type, `required: true`, `trim: true`.
+   - `email`: String type, `required: true`, `unique: true`, `lowercase: true`, `trim: true`.
+   - `phone`: String type, `required: true`, `trim: true`.
+   - `passwordHash`: String type, `required: true`.
+   - `role`: String type, `enum: ["SELLER", "CUSTOMER", "ADMIN"]`, `default: "SELLER"`.
+   - Enable automatic timestamps (`{ timestamps: true }`).
+4. Exported Model (`User`):
+   - Export `User` typed as `Model<IUser>`.
+   - Use the Next.js model reuse pattern: `mongoose.models.User || mongoose.model<IUser>("User", UserSchema)`.
+
+### Code Style Constraints
+
+- Strict TypeScript typing without `any`.
+- Output only production code for the target path.

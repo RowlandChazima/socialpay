@@ -103,3 +103,40 @@ Implement a strictly typed Mongoose User schema and model that prevents model re
 
 - Strict TypeScript typing without `any`.
 - Output only production code for the target path.
+
+<!-- AUTHENTICATION PROMPTS -->
+
+<!-- ==REGISTRATION ENDPOINT==== -->
+
+Act as a Senior Next.js Backend Architect. Create an authentication registration API route handler located at `app/api/auth/register/route.ts`.
+
+### Primary Objective
+
+Implement a secure user registration POST endpoint for Next.js App Router using Mongoose, bcryptjs for password hashing, and clean HTTP error responses.
+
+### Technical Requirements
+
+1. Imports:
+   - Import `NextResponse` from `"next/server"`.
+   - Import `bcrypt` from `"bcryptjs"`.
+   - Import `connectToDatabase` from `"@/lib/db/mongodb"`.
+   - Import `User` from `"@/lib/db/models/User"`.
+2. Exported Handler:
+   - Export an `async function POST(request: Request)`.
+3. Validation & Business Logic:
+   - Parse JSON request body to extract `name`, `email`, `phone`, and `password`.
+   - Validate presence of all 4 fields. If any are missing, return `NextResponse.json` with `{ error: "All fields are required" }` and status `400`.
+   - Call `await connectToDatabase()`.
+   - Check if a user already exists with `User.findOne({ email })`. If found, return `{ error: "A user with this email already exists" }` with status `409`.
+4. Password Hashing & Record Creation:
+   - Hash `password` using `await bcrypt.hash(password, 12)`.
+   - Create a user using `User.create(...)` passing `name`, `email`, `phone`, `passwordHash`, and set explicit `role: "SELLER"`.
+5. Success & Error Handling:
+   - Return status `201` with message `"User created successfully"` and a sanitized user payload containing `id` (`user._id`), `name`, `email`, and `role`.
+   - Wrap the whole flow in a try/catch block. Log caught errors as `"Registration error:"` using `console.error`, and return status `500` with `{ error: "Something went wrong" }`.
+
+### Code Style Constraints
+
+- Strict TypeScript typing with no `any`.
+- Do not expose sensitive data (e.g., `passwordHash`) in the success response payload.
+- Follow Next.js 16 App Router conventions.

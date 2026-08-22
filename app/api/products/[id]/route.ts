@@ -109,3 +109,48 @@ export async function PATCH(request: Request, { params }: RouteContext) {
     );
   }
 }
+
+export async function DELETE(_request: Request, { params }: RouteContext) {
+  try {
+    const session = await auth();
+
+    if (!session?.user?.id) {
+      return Response.json({ error: "Unauthorised" }, { status: 401 });
+    }
+
+    if (session.user.role !== "SELLER") {
+      return Response.json(
+        { error: "Only sellers can delete products" },
+        { status: 403 },
+      );
+    }
+
+    const { id } = await params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return Response.json({ error: "Invalid product ID" }, { status: 400 });
+    }
+
+    await connectToDatabase();
+
+    const product = await Product.findOneAndDelete({
+      _id: id,
+      sellerId: session.user.id,
+    });
+
+    if (!product) {
+      return Response.json({ error: "Product not found" }, { status: 404 });
+    }
+
+    return Response.json({
+      message: "Product deleted successfully",
+    });
+  } catch (error) {
+    console.error("Delete product error:", error);
+
+    return Response.json(
+      { error: "Failed to delete product" },
+      { status: 500 },
+    );
+  }
+}

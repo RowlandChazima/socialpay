@@ -3,6 +3,7 @@ import Link from "next/link";
 import { auth } from "@/auth";
 import { connectToDatabase } from "@/lib/db/mongodb";
 import { Product } from "@/lib/db/models/Product";
+import DeleteProductButton from "./DeleteProductButton";
 
 export default async function ProductsPage() {
   const session = await auth();
@@ -103,6 +104,8 @@ export default async function ProductsPage() {
                   >
                     Edit
                   </Link>
+
+                  <DeleteProductButton productId={product._id.toString()} />
                 </div>
               </div>
             </div>

@@ -68,6 +68,8 @@ Implement a lightweight GET route handler for Next.js App Router that verifies d
 
 <!-- THE USER MODELS -->
 
+# ==USER MODEL PROMPT==
+
 Act as a Senior Next.js Backend Architect. Create a TypeScript Mongoose model file located at `lib/db/models/User.ts`.
 
 ### Primary Objective
@@ -103,6 +105,52 @@ Implement a strictly typed Mongoose User schema and model that prevents model re
 
 - Strict TypeScript typing without `any`.
 - Output only production code for the target path.
+
+# Product model Prompt
+
+Act as a Senior Next.js Backend Architect. Create a TypeScript Mongoose model file located at `lib/db/models/Product.ts`.
+
+### Primary Objective
+
+Implement a strictly typed, indexed Mongoose Product schema and model for an e-commerce platform built on Next.js App Router. The model must enforce integer-only pricing/stock validation and prevent model re-compilation errors during Next.js Hot Module Reloads (HMR).
+
+### Technical Requirements
+
+1. Imports:
+   - Import `mongoose`, `{ Document, Model, Schema, Types }` from `"mongoose"`.
+2. Exported Types & Interfaces:
+   - Export type `ProductStatus`: String union `"DRAFT" | "ACTIVE" | "ARCHIVED"`.
+   - Export interface `IProduct` extending `Document`:
+     - `sellerId`: `Types.ObjectId`
+     - `name`: string
+     - `description`: string
+     - `price`: number
+     - `currency`: `"KES"`
+     - `stock`: number
+     - `image`: `{ url: string; publicId: string; }`
+     - `status`: `ProductStatus`
+     - `slug`: string
+     - `createdAt`: Date
+     - `updatedAt`: Date
+3. Schema Definition (`ProductSchema = new Schema<IProduct>`):
+   - `sellerId`: `Schema.Types.ObjectId`, `ref: "User"`, `required: true`, `index: true`.
+   - `name`: String, `required: true`, `trim: true`.
+   - `description`: String, `required: true`, `trim: true`.
+   - `price`: Number, `required: true`, `min: 1`, custom validator using `Number.isInteger` with message `"Price must be a whole number"`.
+   - `currency`: String, `enum: ["KES"]`, `default: "KES"`.
+   - `stock`: Number, `required: true`, `min: 0`, custom validator using `Number.isInteger` with message `"Stock must be a whole number"`.
+   - `image`: Nested object with `url` (String, required) and `publicId` (String, required).
+   - `status`: String, `enum: ["DRAFT", "ACTIVE", "ARCHIVED"]`, `default: "DRAFT"`.
+   - `slug`: String, `required: true`, `unique: true`, `index: true`, `trim: true`.
+   - Schema Options: Enable automatic timestamps (`{ timestamps: true }`).
+4. Exported Model (`Product`):
+   - Export `Product` typed as `Model<IProduct>`.
+   - Use Next.js model reuse pattern: `mongoose.models.Product || mongoose.model<IProduct>("Product", ProductSchema)`.
+
+### Code Style Constraints
+
+- Strict TypeScript typing without `any`.
+- Output clean, production-ready code with no extra boilerplate.
 
 <!-- AUTHENTICATION PROMPTS -->
 

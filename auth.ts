@@ -1,8 +1,9 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { connectToDatabase } from "./lib/db/mongodb";
-import { User } from "./lib/db/models/User";
 import bcrypt from "bcryptjs";
+
+import { connectToDatabase } from "@/lib/db/mongodb";
+import { User } from "@/lib/db/models/User";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -48,5 +49,25 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
   session: {
     strategy: "jwt",
+  },
+
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.role = user.role;
+      }
+
+      return token;
+    },
+
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id as string;
+        session.user.role = token.role as "SELLER" | "CUSTOMER" | "ADMIN";
+      }
+
+      return session;
+    },
   },
 });

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 
 import { connectToDatabase } from "@/lib/db/mongodb";
 import { Product } from "@/lib/db/models/Product";
+import CheckoutForm from "./CheckoutForm";
 
 interface ProductPageProps {
   params: Promise<{
@@ -24,9 +25,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen bg-background text-white">
       <div className="mx-auto max-w-5xl px-6 py-12">
-        <div className="grid overflow-hidden rounded-xl bg-white shadow-sm md:grid-cols-2">
+        <div className="grid overflow-hidden rounded-xl bg-background shadow-sm md:grid-cols-2">
           <div>
             <img
               src={product.image.url}
@@ -56,12 +57,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 : "Out of stock"}
             </p>
 
-            <button
-              disabled={product.stock === 0}
-              className="mt-8 w-full rounded-md bg-black px-6 py-3 font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {product.stock > 0 ? "Buy Now" : "Out of Stock"}
-            </button>
+            <CheckoutForm
+              product={{
+                id: product._id.toString(),
+                name: product.name,
+                price: product.price,
+                stock: product.stock,
+              }}
+            />
           </div>
         </div>
       </div>

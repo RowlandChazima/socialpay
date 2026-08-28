@@ -62,23 +62,6 @@ const OrderSchema = new Schema(
       enum: ["PENDING", "PAID", "FAILED", "CANCELLED"],
       default: "PENDING",
     },
-
-    payment: {
-      provider: {
-        type: String,
-        enum: ["MPESA", "CARD", "OTHER"],
-      },
-
-      transactionId: {
-        type: String,
-      },
-
-      status: {
-        type: String,
-        enum: ["PENDING", "SUCCESS", "FAILED"],
-        default: "PENDING",
-      },
-    },
   },
   {
     timestamps: true,

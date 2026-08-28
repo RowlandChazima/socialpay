@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { connectToDatabase } from "@/lib/db/mongodb";
 import { Order } from "@/lib/db/models/Order";
 import { Product } from "@/lib/db/models/Product";
+import PaymentButton from "./PaymentButton";
 
 interface CheckoutPageProps {
   params: Promise<{
@@ -66,12 +67,10 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
               order.
             </p>
 
-            <button
-              type="button"
-              className="mt-6 w-full rounded-md bg-black px-6 py-3 font-medium text-white"
-            >
-              Pay KES {order.totalAmount.toLocaleString()}
-            </button>
+            <PaymentButton
+              orderId={order._id.toString()}
+              amount={order.totalAmount}
+            />
           </div>
         </div>
       </div>

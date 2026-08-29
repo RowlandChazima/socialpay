@@ -34,10 +34,17 @@ export async function POST(request: Request) {
     // checking whether the order is payabable due to the like different statuses of the payment
 
     if (order.status !== "PENDING") {
-      return Response.json(
-        { error: "This order cannot be paid" },
-        { status: 400 },
-      );
+      const existingPayment = await Payment.findOne({
+        orderId: order._id,
+        status: "PENDING",
+      });
+
+      if (existingPayment) {
+        return Response.json(
+          { error: "A payment is already in progress for this order" },
+          { status: 400 },
+        );
+      }
     }
 
     // create a payment record in the DB
